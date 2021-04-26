@@ -22,7 +22,7 @@ const App = (props) => {
     const [, setCookie, removeCookie] = useCookies()
 
     useEffect(() => {
-        axios.get(`${API_URL}user/rememberme`,{withCredentials : true})
+        axios.get(`${API_URL}uuuuser/rememberme`,{withCredentials : true})
             .then(res => {
                 if (res.data === '') throw new Error();
                 setUser({
