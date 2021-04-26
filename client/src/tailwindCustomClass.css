@@ -1,0 +1,66 @@
+/* input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active
+{
+    caret-color: #9ca3af;
+    -webkit-text-fill-color: #9ca3af;
+    -webkit-box-shadow: 0 0 0 1000px #1f2937 inset !important;
+} */
+
+.authInput{
+    @apply text-gray-400 text-lg bg-transparent w-full px-2 focus:outline-none focus:ring-1 focus:ring-gray-400 
+}
+
+authInput::placeholder{
+    @apply text-red-500
+}
+
+.authInputWrapper{
+    @apply w-full mx-auto flex border-2 border-gray-700 rounded-lg
+}
+
+.authBtn{
+    @apply py-3 mt-10 text-white rounded-xl transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500
+}
+
+.bg-black-900{
+    background-color: #120f13;
+}
+
+.bg-black-1100{
+    background-color: #0B090C;
+}
+
+/* ------ FOCUS ---- */
+.ctmFocus{
+    @apply transition duration-200 focus:ring-2 ring-inset ring-gray-500
+}
+.ctmFocus:focus{
+    @apply outline-none ring-1
+}
+/* ------ */
+
+.z-index--1{
+    z-index: -1;
+}
+
+.bg-InputCreateChannel{
+    background-color: #3C393F;
+}
+
+.hoverMenuProfileBg:hover{
+    background-color: #3C393F;
+}
+
+.channelIcon{
+    background-color: #252329;
+}
+
+.inputSearch{
+    background-color: #3C393F;
+}
+
+.bg-black-700{
+    background-color: #252329;
+}
