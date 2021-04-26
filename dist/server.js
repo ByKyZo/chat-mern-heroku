@@ -47,7 +47,11 @@ const channel_controller_1 = __importDefault(require("./controllers/channel.cont
 const path_1 = __importDefault(require("path"));
 const server = express_1.default();
 const httpServer = http_1.createServer(server);
-const io = new socket_io_1.Server(httpServer);
+const io = new socket_io_1.Server(httpServer, {
+    cors: {
+        origin: 'https://chat-group-master.herokuapp.com'
+    }
+});
 // socket io
 io.on("connection", (socket) => {
     console.log('User connected ' + socket.id);
@@ -79,7 +83,7 @@ server.get('*', (req, res) => {
 });
 // middleware
 server.use(body_parser_1.default.json());
-server.use(cors_1.default({ credentials: true })); // http://localhost:3000
+server.use(cors_1.default({ origin: 'https://chat-group-master.herokuapp.com', credentials: true })); // http://localhost:3000
 server.use(cookie_parser_1.default());
 // routes
 server.use('/api/user', user_routes_1.default);

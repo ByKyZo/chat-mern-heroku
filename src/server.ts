@@ -16,7 +16,11 @@ import path from 'path';
 const server = express();
 const httpServer = createServer(server);
 
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+    cors : {
+        origin : 'https://chat-group-master.herokuapp.com'
+    }
+});
 
 
 // socket io
@@ -58,7 +62,7 @@ server.get('*', (req , res) => {
 
 // middleware
 server.use(bodyParser.json());
-server.use(cors({credentials : true})); // http://localhost:3000
+server.use(cors({ origin : 'https://chat-group-master.herokuapp.com',credentials : true})); // http://localhost:3000
 server.use(cookieParser());
 
 
