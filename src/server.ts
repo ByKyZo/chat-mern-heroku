@@ -55,9 +55,9 @@ io.on("connection", (socket: Socket) => {
     })
 });
 
-server.use(express.static('client/build'));
+server.use(express.static('../client/build'));
 server.get('*', (req , res) => {
-    res.sendFile(path.resolve(__dirname, 'client','build','index.html'));
+    res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
 })
 
 // middleware
@@ -70,10 +70,11 @@ server.use(cookieParser());
 server.use('/api/user',userRouter);
 server.use('/api/channel',channelRouter);
 
+const PORT = process.env.PORT || 5050;
 
 // server PORT : 5050
-httpServer.listen(process.env.PORT , () => {
-    console.log('Connected on PORT : ' + process.env.PORT);
+httpServer.listen(PORT , () => {
+    console.log('Connected on PORT : ' + PORT);
 });
 
 
