@@ -22,6 +22,7 @@
     "yup": "^0.32.9"
   },
   "scripts": {
+    "heroku-postbuild":"npm install --prefix client && npm run build --prefix client" ,
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
