@@ -16,11 +16,7 @@ import path from 'path';
 const server = express();
 const httpServer = createServer(server);
 
-const io = new Server(httpServer, {
-    cors: { 
-        origin: "http://localhost:3000" , 
-      } 
-});
+const io = new Server(httpServer);
 
 
 // socket io
@@ -62,7 +58,7 @@ server.get('*', (req , res) => {
 
 // middleware
 server.use(bodyParser.json());
-server.use(cors({origin : 'http://localhost:3000' , credentials : true})); // http://localhost:3000
+server.use(cors({credentials : true})); // http://localhost:3000
 server.use(cookieParser());
 
 
