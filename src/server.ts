@@ -55,6 +55,11 @@ io.on("connection", (socket: Socket) => {
     })
 });
 
+server.use(express.static('client/build'));
+server.get('*', (req , res) => {
+    res.sendFile(path.resolve(__dirname, 'client','build','index.html'));
+})
+
 // middleware
 server.use(bodyParser.json());
 server.use(cors({origin : 'http://localhost:3000' , credentials : true})); // http://localhost:3000

@@ -44,6 +44,7 @@ const channel_routes_1 = __importDefault(require("./routes/channel.routes"));
 const socket_io_1 = require("socket.io");
 const message_controller_1 = __importDefault(require("./controllers/message.controller"));
 const channel_controller_1 = __importDefault(require("./controllers/channel.controller"));
+const path_1 = __importDefault(require("path"));
 const server = express_1.default();
 const httpServer = http_1.createServer(server);
 const io = new socket_io_1.Server(httpServer, {
@@ -75,6 +76,10 @@ io.on("connection", (socket) => {
         const bannedMember = yield channel_controller_1.default.banChannelMember(bannedMemberID, channelID);
         io.emit('banMember', { bannedMember, channelID });
     }));
+});
+server.use(express_1.default.static('client/build'));
+server.get('*', (req, res) => {
+    res.sendFile(path_1.default.resolve(__dirname, 'client', 'build', 'index.html'));
 });
 // middleware
 server.use(body_parser_1.default.json());
