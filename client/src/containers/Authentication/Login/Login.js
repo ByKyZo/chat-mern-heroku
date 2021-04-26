@@ -27,7 +27,6 @@ const Login = ({isAlreadyMember}) => {
 
         axios.post(`${API_URL}user/signin`,userAuth)
             .then(res => {
-                console.log(res);
                 if (res.status === '') throw new Error();
 
                 setError(false); 

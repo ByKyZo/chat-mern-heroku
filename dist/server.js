@@ -38,7 +38,6 @@ dotenv.config({ path: './env/.env' });
 const body_parser_1 = __importDefault(require("body-parser"));
 require("./config/dbconfig");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const cors_1 = __importDefault(require("cors"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const channel_routes_1 = __importDefault(require("./routes/channel.routes"));
 const socket_io_1 = require("socket.io");
@@ -47,11 +46,13 @@ const channel_controller_1 = __importDefault(require("./controllers/channel.cont
 const path_1 = __importDefault(require("path"));
 const server = express_1.default();
 const httpServer = http_1.createServer(server);
-const io = new socket_io_1.Server(httpServer, {
-    cors: {
-        origin: 'https://chat-group-master.herokuapp.com'
-    }
-});
+// const io = new Server(httpServer, {
+//     cors : {
+//         origin : 'https://chat-group-master.herokuapp.com'
+//     }
+// });
+const io = new socket_io_1.Server(httpServer);
+// console.log(__dirname);
 // socket io
 io.on("connection", (socket) => {
     console.log('User connected ' + socket.id);
@@ -77,18 +78,21 @@ io.on("connection", (socket) => {
         io.emit('banMember', { bannedMember, channelID });
     }));
 });
-server.use(express_1.default.static('client/build'));
-server.get('*', (req, res) => {
-    res.sendFile(path_1.default.resolve(__dirname, 'client', 'build', 'index.html'));
-});
 // middleware
 server.use(body_parser_1.default.json());
-server.use(cors_1.default({ origin: 'https://chat-group-master.herokuapp.com', credentials: true })); // http://localhost:3000
+// server.use(cors({ origin : 'https://chat-group-master.herokuapp.com',credentials : true})); // http://localhost:3000
 server.use(cookie_parser_1.default());
+// VERIFIER PROBLEME D'URL pour HEROKU
 // routes
-server.use('/api/user', user_routes_1.default);
-server.use('/api/channel', channel_routes_1.default);
+server.use('/user', user_routes_1.default);
+server.use('/channel', channel_routes_1.default);
+server.use(express_1.default.static(path_1.default.join(__dirname, '../client/build')));
+server.get('/*', (_, res) => {
+    res.sendFile(path_1.default.join(__dirname, '../client/build/index.html'));
+});
+const PORT = process.env.PORT || 5050;
+// const PORT = 5000;
 // server PORT : 5050
-httpServer.listen(process.env.PORT, () => {
-    console.log('Connected on PORT : ' + process.env.PORT);
+httpServer.listen(PORT, () => {
+    console.log('Connected on PORT : ' + PORT);
 });

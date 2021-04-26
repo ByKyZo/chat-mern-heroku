@@ -24,6 +24,9 @@ const httpServer = createServer(server);
 const io = new Server(httpServer);
 
 
+
+// console.log(__dirname);
+
 // socket io
 io.on("connection", (socket: Socket) => {
     console.log('User connected ' + socket.id);
@@ -56,22 +59,24 @@ io.on("connection", (socket: Socket) => {
     })
 });
 
-server.use(express.static('../client/build'));
-server.get('*', (req , res) => {
-    res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
-})
 
 // middleware
 server.use(bodyParser.json());
 // server.use(cors({ origin : 'https://chat-group-master.herokuapp.com',credentials : true})); // http://localhost:3000
 server.use(cookieParser());
 
+// VERIFIER PROBLEME D'URL pour HEROKU
 
 // routes
 server.use('/user',userRouter);
 server.use('/channel',channelRouter);
+server.use(express.static(path.join(__dirname , '../client/build')));
+server.get('/*', ( _, res) => {
+    res.sendFile(path.join(__dirname , '../client/build/index.html'));
+})
 
 const PORT = process.env.PORT || 5050;
+// const PORT = 5000;
 
 // server PORT : 5050
 httpServer.listen(PORT , () => {
