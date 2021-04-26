@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "heroku-postbuild":"npm install --prefix client && npm run build --prefix client" ,
     "start" : "node dist/server.js",
     "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon dist/server.js\""
   },

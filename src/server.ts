@@ -68,8 +68,8 @@ server.use(cookieParser());
 
 
 // routes
-server.use('/api/user',userRouter);
-server.use('/api/channel',channelRouter);
+server.use('/user',userRouter);
+server.use('/channel',channelRouter);
 
 const PORT = process.env.PORT || 5050;
 
