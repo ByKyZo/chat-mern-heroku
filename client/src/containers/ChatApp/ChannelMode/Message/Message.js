@@ -10,7 +10,7 @@ const Message = ({user , message , date, hour}) => {
             currentDay[i] = parseInt(currentDay[i]);
         }
 
-        if (messageDay[1] == currentDay[1] && messageDay[2] == currentDay[2]){
+        if (messageDay[1] === currentDay[1] && messageDay[2] === currentDay[2]){
             if (messageDay[0] === currentDay[0]) return 'today at ';
             else if (messageDay[0] === currentDay[0] - 1) return 'yesterday at ';
         }

@@ -19,7 +19,7 @@ const userDisconnected = {
 const App = (props) => {
 
     const [user , setUser] = useState(userDisconnected)
-    const [, setCookie, removeCookie] = useCookies()
+    const [ , setCookie, removeCookie] = useCookies()
 
     useEffect(() => {
         axios.get(`${API_URL}user/rememberme`,{withCredentials : true})
@@ -31,10 +31,11 @@ const App = (props) => {
                     email : res.data.email,
                     description : res.data.description,
                     picture : res.data.picture,
-                    role : null,
+                    role : res.data.role,
                     isConnected : true // pas besoin de ça
                 })
                 // A VOIR POUR FAIRE DE L'ASYNC
+            
                 setCookie(['REMEMBER_ME'],res.data.remember_me_token)
             })
             .catch(err => {

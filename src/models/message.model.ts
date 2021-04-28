@@ -27,8 +27,8 @@ const MessageShema: Schema = new Schema (
 
 MessageShema.pre('save', function(next){
 
-    this.date = new Date().toLocaleDateString();
-    // this.date = '24/04/2021';
+    // this.date = new Date().toLocaleDateString();
+    this.date = '26/04/2021';
     this.hour = new Date().toLocaleTimeString().substring(0,5)
 
     next();

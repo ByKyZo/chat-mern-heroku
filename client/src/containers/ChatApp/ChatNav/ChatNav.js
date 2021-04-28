@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown , faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FaTwitter } from 'react-icons/fa';
@@ -7,26 +7,13 @@ import { UserContext } from '../../../context/UserContext';
 import { useCookies } from 'react-cookie';
 import NavChannelMode from './Mode/NavChannelMode/NavChannelMode';
 import NavMessageMode from './Mode/NavMessageMode/NavMessageMode';
+import Dropdown from '../../../components/Modal/Dropdown';
 
 const ChatNav = ({ currentMode , setMode, selectChannel , currentChannel }) => {
 
     const { user } = useContext(UserContext);
     const [openProfileModal , setOpenProfileModal] = useState(false)
-    const profileModalRef = useRef();
     const [,, removeCookie] = useCookies();
-
-
-    useEffect(() => {
-        const isOpen = openProfileModal;
-        const focusModal = (e) => {
-            if (!profileModalRef.current.contains(e.target) && isOpen) setOpenProfileModal(false)
-        }
-
-        window.addEventListener('click',focusModal)
-        return () => {
-            window.removeEventListener('click',focusModal)
-        }
-    },[openProfileModal])
 
      return (
          <div className='w-72 bg-black-900 flex flex-col justify-between flex-shrink-0'>
@@ -54,9 +41,8 @@ const ChatNav = ({ currentMode , setMode, selectChannel , currentChannel }) => {
                 <a href='#' className="h-20 bg-black-1100 p-6 flex items-center justify-between w-full ctmFocus ring-inset relative" onClick={e => {
                     e.preventDefault()
                     setOpenProfileModal(true)}}>
-                    <div ref={profileModalRef}
-                        className={`w-48 h-44 bg-black-700 absolute -top-36 right-4 rounded-xl p-3 transition duration-200 opacity-0 transform ${openProfileModal ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}>
-                        <ul className='flex flex-col justify-evenly h-full text-left text-white'>
+
+                        <Dropdown isOpen={openProfileModal} setIsOpen={setOpenProfileModal} top='-144px' right='16px'>
                             <li>
                                 <button className='flex w-full transition duration-200 hoverMenuProfileBg rounded-lg p-2 items-center ctmFocus'>
                                     <FontAwesomeIcon className='text-xl mr-3' icon={faUserCircle}/> 
@@ -81,8 +67,7 @@ const ChatNav = ({ currentMode , setMode, selectChannel , currentChannel }) => {
                                     Logout
                                 </button>
                             </li>
-                        </ul>
-                    </div>
+                        </Dropdown>
 
                     <div className="flex items-center">
                         <img className='h-10 w-10 mr-5' src={user.image} alt='profile'></img>

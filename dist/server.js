@@ -44,55 +44,65 @@ const socket_io_1 = require("socket.io");
 const message_controller_1 = __importDefault(require("./controllers/message.controller"));
 const channel_controller_1 = __importDefault(require("./controllers/channel.controller"));
 const path_1 = __importDefault(require("path"));
+const user_controller_1 = __importDefault(require("./controllers/user.controller"));
 const server = express_1.default();
 const httpServer = http_1.createServer(server);
-// const io = new Server(httpServer, {
+const PORT = process.env.PORT || 5050;
+// const io = new Server(httpServer, { // A COMMENTER POUR LA PRODUCTION
 //     cors : {
-//         origin : 'https://chat-group-master.herokuapp.com'
+//         origin : 'http://localhost:3000'
 //     }
 // });
+/**
+ * A DECOMMENTER POUR LA PRODUCTION
+ */
 const io = new socket_io_1.Server(httpServer);
-// console.log(__dirname);
 // socket io
 io.on("connection", (socket) => {
     console.log('User connected ' + socket.id);
     socket.on('sendMessage', (mess) => __awaiter(void 0, void 0, void 0, function* () {
-        // console.log('message : ' + mess)
         const message = yield message_controller_1.default.sendMessage(mess.userID, mess.channelID, mess.message);
-        // console.log(message);
         io.emit('sendMessage', message);
     }));
     socket.on('createChannel', ({ userID, name, description }) => __awaiter(void 0, void 0, void 0, function* () {
         const channel = yield channel_controller_1.default.createChannel(userID, name, description);
-        // console.log(channel);
         io.emit('createChannel', { userID, channel });
     }));
     socket.on('joinChannel', ({ userID, channelID }) => __awaiter(void 0, void 0, void 0, function* () {
         const { joinedChannel, joinedUser } = yield channel_controller_1.default.joinChannel(userID, channelID);
-        console.log(joinedChannel);
-        // console.log(channelID);
         io.emit('joinChannel', { joinedUser, joinedChannel });
     }));
     socket.on('banMember', ({ bannedMemberID, channelID }) => __awaiter(void 0, void 0, void 0, function* () {
         const bannedMember = yield channel_controller_1.default.banChannelMember(bannedMemberID, channelID);
         io.emit('banMember', { bannedMember, channelID });
     }));
+    socket.on('deleteChannel', (channelID) => __awaiter(void 0, void 0, void 0, function* () {
+        const deletedChannel = yield channel_controller_1.default.deleteChannel(channelID);
+        io.emit('deleteChannel', deletedChannel);
+    }));
+    socket.on('leaveChannel', ({ userID, channelID }) => __awaiter(void 0, void 0, void 0, function* () {
+        const leaveMember = yield user_controller_1.default.leaveChannel(userID, channelID);
+        io.emit('leaveChannel', { leaveMember, channelID });
+    }));
+    // socket.on('channelNotification', async ({ userID , channelID }) => {
+    //     const channelNotifiedbyUserID = await ChannelController.notification(userID , channelID);
+    //     socket.emit('channelNotification',({ userID , channelID }))
+    // })
 });
 // middleware
 server.use(body_parser_1.default.json());
-// server.use(cors({ origin : 'https://chat-group-master.herokuapp.com',credentials : true})); // http://localhost:3000
+// server.use(cors({ origin : 'http://localhost:3000',credentials : true})); // A COMMENTER POUR LA PRODUCTION
 server.use(cookie_parser_1.default());
-// VERIFIER PROBLEME D'URL pour HEROKU
 // routes
 server.use('/user', user_routes_1.default);
 server.use('/channel', channel_routes_1.default);
+/**
+ * A DECOMMENTER POUR LA PRODUCTION
+ */
 server.use(express_1.default.static(path_1.default.join(__dirname, '../client/build')));
 server.get('/*', (_, res) => {
     res.sendFile(path_1.default.join(__dirname, '../client/build/index.html'));
 });
-const PORT = process.env.PORT || 5050;
-// const PORT = 5000;
-// server PORT : 5050
 httpServer.listen(PORT, () => {
-    console.log('Connected on PORT : ' + PORT);
+    console.log('Connected on PORTT : ' + PORT);
 });

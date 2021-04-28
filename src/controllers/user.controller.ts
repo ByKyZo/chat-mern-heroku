@@ -8,11 +8,9 @@ export default class UserController {
         res.send('get user');
     }
 
-    public static async leaveChannel (req: Request , res: Response) {
+    public static async leaveChannel (userID: String , channelID: String) {
 
-        const { userID , channelID } = req.body;
-
-        await UserModel.findByIdAndUpdate(userID,{$pull : {channel :  channelID}})
+        return await UserModel.findByIdAndUpdate(userID,{$pull : {channel :  channelID}})
     }
 
 }

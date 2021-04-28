@@ -21,9 +21,6 @@ class MessageController {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield user_model_1.default.findById(userID).select('-channel -password -email -remember_me_token');
             const messageSend = yield message_model_1.default.create({ user, channelID, message });
-            // messageSend = await JSON.parse(JSON.stringify(messageSend));
-            // console.log(messageSend)
-            // messageSend.createdAt = await messageSend.createdAt.replaceAll('-','/');
             return messageSend;
             // await MessageModel.deleteMany({});
         });

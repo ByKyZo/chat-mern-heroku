@@ -24,13 +24,17 @@ const UserSchema: Schema = new Schema (
         remember_me_token : {
             type : String
         },
+        channel : {
+            type : [String]
+        },  
         picture : {
             type : String,
             default : 'default picture'
         },
-        channel : {
-            type : [String]
-        },
+        role : {
+            type : String,
+            default : 'user'
+        }
     },
     {
         timestamps : true

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { IoSend } from 'react-icons/io5';
 import { UserContext } from '../../../context/UserContext';
 import { API_URL , SOCKET_URL} from '../../../config';
@@ -6,6 +6,7 @@ import axios from 'axios';
 import './customtailwind.css';
 import io from 'socket.io-client';
 import Message from './Message/Message';
+import DayDivider from './Message/DayDivider';
 
 
 const socket = io(SOCKET_URL);
@@ -19,7 +20,6 @@ const Channel = ({ currentChannel }) => {
     useEffect(() => {
         // socket.open()
         socket.on('sendMessage', (message) => {
-            // console.log('send message')
             if (channelMessage.findIndex(mess => mess._id !== message._id) !== -1) return;
             setChannelMessage(old => [...old, message])
         })
@@ -34,12 +34,31 @@ const Channel = ({ currentChannel }) => {
             setChannelMessage(res.data)
         })
     },[])
-    
-    // const isMessageEmpty = () => {
-    //     if (!messageRef.current) return false;
-    //     return messageRef.current.innerText === '';
-    // }
-    
+
+    const returnMessagesWithDayDivider = () => {   
+        const channelMessageCopy = [];
+        const day =   channelMessage.filter(message => message.channelID === currentChannel._id).map(message => message.date.slice(0,2))
+        const month = channelMessage.filter(message => message.channelID === currentChannel._id).map(message => message.date.slice(3,5))
+        const years = channelMessage.filter(message => message.channelID === currentChannel._id).map(message => message.date.slice(6,10))
+        let currentDay = day[0];
+        let currentMonth = month[0];
+        let currentYears = years[0];
+        channelMessage.filter(message => message.channelID === currentChannel._id).forEach((message, index) => {
+            const messageDay = message.date.slice(0,2)
+            const messageMonth = message.date.slice(3,5)
+            const messageYears = message.date.slice(6,10)
+            if (messageDay !== currentDay || messageMonth !== currentMonth || messageYears !== currentYears) {
+                channelMessageCopy.push(<DayDivider key={index} date={message.date} />)
+                currentDay = day[index];
+                currentMonth = month[index];
+                currentYears = years[index];
+            }
+            channelMessageCopy.push(<Message key={message._id} {...message} />)   
+        })
+        return channelMessageCopy;
+    }
+
+    // returnMessages()
     const sendMessage = () => {
         const message = messageRef.current.innerText
         if (!message) return;
@@ -75,10 +94,13 @@ const Channel = ({ currentChannel }) => {
                     <>
                         <div className='overflow-y-scroll h-full scrollbar flex flex-col-reverse'>
                             <ul className='px-11 pt-6 break-all mt-auto'>
-                            { channelMessage &&
+                            {/* { channelMessage &&
                                 channelMessage.filter(channel => channel.channelID === currentChannel._id).map(message => {
                                     return  <Message key={message._id} {...message} />
                                 })
+                            } */}
+                            {
+                                returnMessagesWithDayDivider()
                             }
                             </ul>
                         </div>

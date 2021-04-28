@@ -12,75 +12,82 @@ import { Server, Socket } from 'socket.io';
 import MessageController from './controllers/message.controller';
 import ChannelController from './controllers/channel.controller';
 import path from 'path';
+import UserController from './controllers/user.controller';
 
 const server = express();
 const httpServer = createServer(server);
+const PORT = process.env.PORT || 5050;
 
-// const io = new Server(httpServer, {
+// const io = new Server(httpServer, { // A COMMENTER POUR LA PRODUCTION
 //     cors : {
-//         origin : 'https://chat-group-master.herokuapp.com'
+//         origin : 'http://localhost:3000'
 //     }
 // });
+/**
+ * A DECOMMENTER POUR LA PRODUCTION
+ */
+
 const io = new Server(httpServer);
 
-
-
-// console.log(__dirname);
 
 // socket io
 io.on("connection", (socket: Socket) => {
     console.log('User connected ' + socket.id);
 
     socket.on('sendMessage',async (mess: any) => {
-        // console.log('message : ' + mess)
         const message = await MessageController.sendMessage(mess.userID , mess.channelID , mess.message);
-        // console.log(message);
         io.emit('sendMessage', message);
     })
 
     socket.on('createChannel',async ({userID , name , description}) => {
         const channel = await ChannelController.createChannel(userID , name , description);
-        // console.log(channel);
         io.emit('createChannel',{ userID , channel });
     })
 
     socket.on('joinChannel', async ({ userID , channelID }) => {
-
         const { joinedChannel , joinedUser } = await ChannelController.joinChannel(userID , channelID);
-        console.log(joinedChannel);
-        // console.log(channelID);
         io.emit('joinChannel',{ joinedUser , joinedChannel });
     })
     socket.on('banMember', async ({ bannedMemberID , channelID }) => {
-
         const bannedMember = await ChannelController.banChannelMember(bannedMemberID , channelID)
-
         io.emit('banMember',{ bannedMember , channelID })
     })
+    socket.on('deleteChannel', async (channelID: String) => {
+        const deletedChannel = await ChannelController.deleteChannel(channelID);
+        io.emit('deleteChannel', deletedChannel);
+    })
+    socket.on('leaveChannel', async ({ userID , channelID }) => {
+        const leaveMember = await UserController.leaveChannel(userID , channelID);
+        io.emit('leaveChannel',{ leaveMember , channelID })
+    })
+    // socket.on('channelNotification', async ({ userID , channelID }) => {
+    //     const channelNotifiedbyUserID = await ChannelController.notification(userID , channelID);
+    //     socket.emit('channelNotification',({ userID , channelID }))
+    // })
 });
 
 
 // middleware
 server.use(bodyParser.json());
-// server.use(cors({ origin : 'https://chat-group-master.herokuapp.com',credentials : true})); // http://localhost:3000
+// server.use(cors({ origin : 'http://localhost:3000',credentials : true})); // A COMMENTER POUR LA PRODUCTION
 server.use(cookieParser());
-
-// VERIFIER PROBLEME D'URL pour HEROKU
 
 // routes
 server.use('/user',userRouter);
 server.use('/channel',channelRouter);
+
+/**
+ * A DECOMMENTER POUR LA PRODUCTION
+ */
+
 server.use(express.static(path.join(__dirname , '../client/build')));
 server.get('/*', ( _, res) => {
     res.sendFile(path.join(__dirname , '../client/build/index.html'));
 })
 
-const PORT = process.env.PORT || 5050;
-// const PORT = 5000;
 
-// server PORT : 5050
 httpServer.listen(PORT , () => {
-    console.log('Connected on PORT : ' + PORT);
+    console.log('Connected on PORTT : ' + PORT);
 });
 
 

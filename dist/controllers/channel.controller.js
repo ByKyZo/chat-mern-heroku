@@ -18,7 +18,10 @@ const message_model_1 = __importDefault(require("../models/message.model"));
 class ChannelController {
     static createChannel(userID, name, description) {
         return __awaiter(this, void 0, void 0, function* () {
-            const channel = yield channel_model_1.default.create({ name, description, owner: userID });
+            const channel = yield channel_model_1.default.create({ name, description, owner: userID, notification: {
+                    userID,
+                    notification: 0
+                } });
             const user = yield user_model_1.default.findByIdAndUpdate(userID, { $addToSet: { channel: channel._id } }, { new: true });
             return channel;
             // await ChannelModel.deleteMany({})
@@ -68,6 +71,24 @@ class ChannelController {
         return __awaiter(this, void 0, void 0, function* () {
             const bannedMember = yield user_model_1.default.findByIdAndUpdate(bannedUserID, { $pull: { channel: channelID } });
             return bannedMember;
+        });
+    }
+    static deleteChannel(channelID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield channel_model_1.default.findByIdAndDelete(channelID);
+        });
+    }
+    static notification(userID, channelID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // TROUVER POURQUOI 9A sincremente pas
+            const channelNotified = yield channel_model_1.default.findByIdAndUpdate(channelID, {
+                notification: {
+                    $set: {
+                        notification: 5,
+                        userID: 'test'
+                    }
+                }
+            });
         });
     }
 }

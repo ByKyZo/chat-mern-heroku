@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState , useMemo } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { UserContext } from '../../../../../../context/UserContext';

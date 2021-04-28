@@ -13,7 +13,7 @@ const NavChannelMode = ( { selectChannel , currentChannel } ) => {
 
                 :
 
-                <ChannelHome selectChannel={selectChannel} />
+                <ChannelHome currentChannel={currentChannel} selectChannel={selectChannel} />
             }
 
          </>

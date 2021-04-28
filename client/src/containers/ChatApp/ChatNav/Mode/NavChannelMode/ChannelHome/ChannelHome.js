@@ -11,7 +11,7 @@ import './scrollbar.css';
 
 const socket = io(SOCKET_URL);
 
-const ChannelHome = ({ selectChannel }) => {
+const ChannelHome = ({ currentChannel , selectChannel }) => {
 
     const [isOpenChannelModal , setIsOpenChannelModal] = useState(false);
     const [loading , setLoading] = useState(false);
@@ -33,9 +33,28 @@ const ChannelHome = ({ selectChannel }) => {
 
     useEffect(() => {
         socket.on('banMember', ({bannedMember , channelID}) => {
-            bannedMember._id === user.id && setChannels(oldChannels => oldChannels.filter(channel => channel._id !== channelID))
+            if (bannedMember._id === user.id) {
+                setChannels(oldChannels => oldChannels.filter(channel => channel._id !== channelID))
+            }
         })
-    })
+        socket.on('sendMessage',(message) => {
+            if (currentChannel._id !== message.channelID) {
+                // LA CONDITION N'A PAS L'AIR DE FONCTIONNE A REVOIR
+                const notifObject = {
+                    userID : user.id,
+                    channelID : message.channelID
+                }
+                socket.emit('channelNotification',notifObject)
+            };
+        })
+        socket.on('channelNotification',({ userID , channelID }) => {
+            // setChannels(oldChannels => {
+            //     const indexChannelNotif = oldsChannels.findIndex(channel => channel._id === message.channelID)
+            //     if (indexChannelNotif === -1) return oldsChannels;
+            //     const channelsCopy = [...oldsChannels];           
+            // })
+        })
+    },[])
     // const handleCreate
 
     const channelLoadingSkelett = () => {
@@ -51,10 +70,12 @@ const ChannelHome = ({ selectChannel }) => {
 
      return (
          <>
+ 
+
             {/* CREATE CHANNEL MODAL */}
             <CreateChannelModal isOpen={isOpenChannelModal} setIsOpen={setIsOpenChannelModal} channels={channels} addChannel={setChannels}/>
             {/* ---------- */}
-
+            
             <NavHead title='Channel' className='justify-between'>
 
                 <button 
@@ -74,7 +95,12 @@ const ChannelHome = ({ selectChannel }) => {
 
                     channels.map((channel,index) => {
                         return  <button key={channel._id} onClick={() => selectChannel(channel)}
-                                    className={`flex items-center ${index !== channels.length -1 && 'mb-4'} cursor-pointer w-full ctmFocus hoverMenuProfileBg p-2 rounded-lg`}>
+                                    className={`flex items-center ${index !== channels.length -1 && 'mb-4'} relative cursor-pointer w-full ctmFocus hoverMenuProfileBg p-2 rounded-lg`}>
+                                    {channel.notification.map((notif,index) => {
+                                        return notif.notification !== 0  && 
+                                                <div key={index} className='absolute h-10 w-10 bg-red-500 rounded-full'>{notif.notification}</div> 
+
+                                    })}
                                     <div className='w-8 h-8 channelIcon mr-3 rounded-md flex items-center justify-center text-white uppercase'>{channel.name[0]}</div>
                                     <span className='text-gray-300 uppercase'>{channel.name}</span>
                                 </button>

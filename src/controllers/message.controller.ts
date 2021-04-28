@@ -12,9 +12,7 @@ export default class MessageController {
 
         const messageSend = await MessageModel.create({user,channelID,message})
 
-        // messageSend = await JSON.parse(JSON.stringify(messageSend));
-        // console.log(messageSend)
-        // messageSend.createdAt = await messageSend.createdAt.replaceAll('-','/');
+     
         return messageSend;
         // await MessageModel.deleteMany({});
     }

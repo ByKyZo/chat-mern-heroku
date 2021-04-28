@@ -8,7 +8,10 @@ export default class ChannelController {
 
     public static async createChannel (userID: String , name: String, description: String) {
 
-        const channel = await ChannelModel.create({ name , description , owner : userID })
+        const channel = await ChannelModel.create({ name , description , owner : userID , notification : {
+            userID,
+            notification : 0
+        }}) 
 
         const user = await UserModel.findByIdAndUpdate(userID,{ $addToSet : { channel : channel._id }},{ new : true })
 
@@ -74,6 +77,28 @@ export default class ChannelController {
         const bannedMember = await UserModel.findByIdAndUpdate(bannedUserID , {$pull : {channel : channelID}})
 
         return bannedMember;
+    }
+
+    public static async deleteChannel (channelID: String) {
+
+        return await ChannelModel.findByIdAndDelete(channelID);
+    }
+
+    public static async notification (userID: String , channelID: String) {
+
+        // TROUVER POURQUOI 9A sincremente pas
+
+        const channelNotified = await ChannelModel.findByIdAndUpdate(channelID , 
+            {
+                notification : {
+                    $set : {
+                        notification : 5,
+                        userID : 'test'
+                    }
+                }
+            }
+        )
+
     }
 
 }
