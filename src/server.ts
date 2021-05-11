@@ -20,17 +20,17 @@ const PORT = process.env.PORT || 5050;
 // const ORIGIN = process.env.PORT;
 const ORIGIN = '';
 
-const io = new Server(httpServer, {
-    // A COMMENTER POUR LA PRODUCTION
-    cors: {
-        origin: ORIGIN,
-    },
-});
+// const io = new Server(httpServer, {
+//     // A COMMENTER POUR LA PRODUCTION
+//     cors: {
+//         origin: ORIGIN,
+//     },
+// });
 /**
  * A DECOMMENTER POUR LA PRODUCTION
  */
 
-// const io = new Server(httpServer);
+const io = new Server(httpServer);
 
 // socket io
 io.on('connection', (socket: Socket) => {
@@ -76,7 +76,7 @@ io.on('connection', (socket: Socket) => {
 
 // middleware
 server.use(bodyParser.json());
-server.use(cors({ origin: ORIGIN, credentials: true })); // A COMMENTER POUR LA PRODUCTION
+// server.use(cors({ origin: ORIGIN, credentials: true })); // A COMMENTER POUR LA PRODUCTION
 server.use(cookieParser());
 
 // routes
