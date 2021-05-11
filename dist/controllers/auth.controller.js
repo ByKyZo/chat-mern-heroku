@@ -31,44 +31,51 @@ class AuthController {
     // }
     static signUp(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { pseudo, email, password } = req.body;
-            const emailAlreadyExist = yield user_model_1.default.findOne({ email });
-            if (emailAlreadyExist)
-                return res.status(500).send('Error email already exist');
-            const salt = yield bcrypt_1.default.genSalt();
-            const passwordHash = yield bcrypt_1.default.hash(password, salt);
-            const user = yield user_model_1.default.create({
-                pseudo,
-                email,
-                password: passwordHash
-            }, (err, docs) => {
-                if (err)
-                    return res.status(500).send('SignUp error : ' + err);
-                res.status(200).send(docs);
-            });
+            try {
+                const { pseudo, email, password } = req.body;
+                const emailAlreadyExist = yield user_model_1.default.findOne({ email });
+                if (emailAlreadyExist)
+                    return res.status(500).send('Error email already exist');
+                const salt = yield bcrypt_1.default.genSalt();
+                const passwordHash = yield bcrypt_1.default.hash(password, salt);
+                const user = yield user_model_1.default.create({
+                    pseudo,
+                    email,
+                    password: passwordHash
+                }, (err, docs) => {
+                    if (err)
+                        return res.status(500).send('SignUp error : ' + err);
+                    res.status(200).send(docs);
+                });
+            }
+            catch (err) {
+                const errors = {};
+            }
         });
     }
     static signIn(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email, password } = req.body;
-            const user = yield user_model_1.default.findOne({ email });
-            if (!user)
-                return res.status(401).send('Emain doesn\'t exist');
-            bcrypt_1.default.compare(password, user.password, (err, same) => __awaiter(this, void 0, void 0, function* () {
-                if (!same)
-                    return res.status(401).send('Wrong password');
-                user_model_1.default.findByIdAndUpdate(user._id, {
-                    $set: {
-                        remember_me_token: uuid_1.v4()
-                    },
-                }, {
-                    new: true
-                }, (err, docs) => {
-                    if (err)
-                        return res.status(500).send('TOKEN ERROR');
-                    res.send(docs);
-                });
-            }));
+            const user = yield user_model_1.default.findOne({ email }, (err, docs) => {
+                if (!docs)
+                    return res.status(401).send('Emain doesn\'t exist');
+                const user = docs.toObject();
+                bcrypt_1.default.compare(password, user.password, (err, same) => __awaiter(this, void 0, void 0, function* () {
+                    if (!same)
+                        return res.status(401).send('Wrong password');
+                    user_model_1.default.findByIdAndUpdate(user._id, {
+                        $set: {
+                            remember_me_token: uuid_1.v4()
+                        },
+                    }, {
+                        new: true
+                    }, (err, docs) => {
+                        if (err)
+                            return res.status(500).send('TOKEN ERROR');
+                        res.send(docs);
+                    });
+                }));
+            });
         });
     }
     static rememberMe(req, res) {

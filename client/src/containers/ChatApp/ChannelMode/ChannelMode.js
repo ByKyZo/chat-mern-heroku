@@ -1,49 +1,47 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { IoSend } from 'react-icons/io5';
+import { GiHamburgerMenu } from 'react-icons/gi';
 import { UserContext } from '../../../context/UserContext';
-import { API_URL , SOCKET_URL} from '../../../config';
+import { API_URL } from '../../../config';
 import axios from 'axios';
 import './customtailwind.css';
-import io from 'socket.io-client';
+import { SocketContext } from '../../../context/SocketContext';
 import Message from './Message/Message';
 import DayDivider from './Message/DayDivider';
+import MediaQuery from 'react-responsive';
 
-
-const socket = io(SOCKET_URL);
-
-const Channel = ({ currentChannel }) => {
+const Channel = ({ setIsOpenBurgerMenu }) => {
 
     const { user } = useContext(UserContext);
     const [channelMessage , setChannelMessage] = useState([]);
     const messageRef = useRef();
+    const socket = useContext(SocketContext)
 
     useEffect(() => {
-        // socket.open()
         socket.on('sendMessage', (message) => {
             if (channelMessage.findIndex(mess => mess._id !== message._id) !== -1) return;
             setChannelMessage(old => [...old, message])
         })
         // VOIR POUR LE DEMONTER
-
-        // return (() => {socket.close()});
     },[])
 
     useEffect(() => {
-        axios.get(`${API_URL}channel/message/${currentChannel._id}`) // pas besoin de l'id modifier le back-end
+        axios.get(`${API_URL}channel/message/${user.currentChannel._id}`) // pas besoin de l'id modifier le back-end
         .then(res => {
+            // console.log(res.data)
             setChannelMessage(res.data)
         })
     },[])
 
     const returnMessagesWithDayDivider = () => {   
         const channelMessageCopy = [];
-        const day =   channelMessage.filter(message => message.channelID === currentChannel._id).map(message => message.date.slice(0,2))
-        const month = channelMessage.filter(message => message.channelID === currentChannel._id).map(message => message.date.slice(3,5))
-        const years = channelMessage.filter(message => message.channelID === currentChannel._id).map(message => message.date.slice(6,10))
+        const day   = channelMessage.filter(message => message.channelID === user.currentChannel._id).map(message => message.date.slice(0,2))
+        const month = channelMessage.filter(message => message.channelID === user.currentChannel._id).map(message => message.date.slice(3,5))
+        const years = channelMessage.filter(message => message.channelID === user.currentChannel._id).map(message => message.date.slice(6,10))
         let currentDay = day[0];
         let currentMonth = month[0];
         let currentYears = years[0];
-        channelMessage.filter(message => message.channelID === currentChannel._id).forEach((message, index) => {
+        channelMessage.filter(message => message.channelID === user.currentChannel._id).forEach((message, index) => {
             const messageDay = message.date.slice(0,2)
             const messageMonth = message.date.slice(3,5)
             const messageYears = message.date.slice(6,10)
@@ -65,11 +63,12 @@ const Channel = ({ currentChannel }) => {
 
         const messageInformations = {
             userID : user.id,
-            channelID : currentChannel._id,
+            channelID : user.currentChannel._id,
             message : message
         }
         messageRef.current.innerText = '';
         socket.emit('sendMessage',messageInformations);
+        socket.emit('channelNotification',user.currentChannel._id)
     }   
 
     const pressEnterForSendMessage = (e) => {
@@ -84,28 +83,29 @@ const Channel = ({ currentChannel }) => {
 
      return (
          <div className='flex flex-col h-full w-full justify-between'>
-            <div className='h-16 shadow-lg text-gray-100 font-bold text-lg px-11 flex items-center uppercase flex-shrink-0'>
+            <div className='h-16 shadow-lg text-gray-100 font-bold text-lg px-11 lg:px-8 flex items-center uppercase flex-shrink-0'>
+                <MediaQuery maxWidth='1023px'>
 
-                <h1>{currentChannel.name ? currentChannel.name : 'Select channel'}</h1>
+                    <button className='mr-6 ctmFocus p-2' onClick={() => setIsOpenBurgerMenu(true)}>
+                        <GiHamburgerMenu />
+                    </button>
+
+                </MediaQuery>
+                <h1>{Object.entries(user.currentChannel).length !== 0 ? user.currentChannel.name : 'Select channel'}</h1>
 
             </div>
                 {
-                    currentChannel ? 
+                    Object.entries(user.currentChannel).length !== 0 ? 
                     <>
                         <div className='overflow-y-scroll h-full scrollbar flex flex-col-reverse'>
-                            <ul className='px-11 pt-6 break-all mt-auto'>
-                            {/* { channelMessage &&
-                                channelMessage.filter(channel => channel.channelID === currentChannel._id).map(message => {
-                                    return  <Message key={message._id} {...message} />
-                                })
-                            } */}
+                            <ul className='px-11 pt-6 lg:px-8 break-all mt-auto'>
                             {
                                 returnMessagesWithDayDivider()
                             }
                             </ul>
                         </div>
 
-                        <div className='min-h-10 max-w-full mx-11 flex relative rounded-md overflow-hidden my-7 flex-shrink-0'>
+                        <div className='min-h-10 max-w-full mx-11 lg:mx-8 flex relative rounded-md overflow-hidden my-7 flex-shrink-0'>
                                     <div 
                                         contentEditable='true'
                                         ref={messageRef}

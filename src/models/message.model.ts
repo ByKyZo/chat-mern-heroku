@@ -1,12 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 
-// const date: String = new Date().toString().replace('-','/');
-
-
 const MessageShema: Schema = new Schema (
     {
-        user : {
-            type : Object,
+        userID : {
+            type : String,
             required : true
         },
         channelID : {
@@ -27,8 +24,8 @@ const MessageShema: Schema = new Schema (
 
 MessageShema.pre('save', function(next){
 
-    // this.date = new Date().toLocaleDateString();
-    this.date = '26/04/2021';
+    this.date = new Date().toLocaleDateString();
+    // this.date = '26/04/2021';
     this.hour = new Date().toLocaleTimeString().substring(0,5)
 
     next();

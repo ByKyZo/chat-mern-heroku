@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 // import { isEmail } from 'validator';
 // import isEmail from 'validator/lib/isEmail';
+import path from 'path';
 
 const UserSchema: Schema = new Schema (
 
@@ -29,7 +30,7 @@ const UserSchema: Schema = new Schema (
         },  
         picture : {
             type : String,
-            default : 'default picture'
+            default : 'profilepicture/images/noprofile.png'
         },
         role : {
             type : String,

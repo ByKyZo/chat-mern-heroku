@@ -8,7 +8,7 @@ router.get('/:id',ChannelController.getAllChannelByUserId);
 router.get('/search/:id',ChannelController.getAllChannelByNotMatchUserID);
 router.get('/message/:id',ChannelController.getChannelMessage);
 router.get('/user/:id',ChannelController.getUsersChannel);
-router.post('/ban',ChannelController.banChannelMember);
+router.post('/resetnotification', ChannelController.resetNotification)
 
 
 

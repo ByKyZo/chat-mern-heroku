@@ -16,7 +16,7 @@ const ChannelSchema = new Schema (
         coOwner : {
             type : [String]
         },
-        notification : [
+        notifications : [
             {
                 userID : {
                     type : String,

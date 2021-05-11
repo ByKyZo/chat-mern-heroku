@@ -20,10 +20,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-// const date: String = new Date().toString().replace('-','/');
 const MessageShema = new mongoose_1.Schema({
-    user: {
-        type: Object,
+    userID: {
+        type: String,
         required: true
     },
     channelID: {
@@ -41,8 +40,8 @@ const MessageShema = new mongoose_1.Schema({
     }
 });
 MessageShema.pre('save', function (next) {
-    // this.date = new Date().toLocaleDateString();
-    this.date = '26/04/2021';
+    this.date = new Date().toLocaleDateString();
+    // this.date = '26/04/2021';
     this.hour = new Date().toLocaleTimeString().substring(0, 5);
     next();
 });

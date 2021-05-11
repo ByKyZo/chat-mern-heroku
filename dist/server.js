@@ -38,6 +38,7 @@ dotenv.config({ path: './env/.env' });
 const body_parser_1 = __importDefault(require("body-parser"));
 require("./config/dbconfig");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const cors_1 = __importDefault(require("cors"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const channel_routes_1 = __importDefault(require("./routes/channel.routes"));
 const socket_io_1 = require("socket.io");
@@ -48,21 +49,24 @@ const user_controller_1 = __importDefault(require("./controllers/user.controller
 const server = express_1.default();
 const httpServer = http_1.createServer(server);
 const PORT = process.env.PORT || 5050;
-// const io = new Server(httpServer, { // A COMMENTER POUR LA PRODUCTION
-//     cors : {
-//         origin : 'http://localhost:3000'
-//     }
-// });
+const io = new socket_io_1.Server(httpServer, {
+    cors: {
+        origin: 'http://localhost:3000'
+    }
+});
 /**
  * A DECOMMENTER POUR LA PRODUCTION
  */
-const io = new socket_io_1.Server(httpServer);
+// const io = new Server(httpServer);
 // socket io
 io.on("connection", (socket) => {
     console.log('User connected ' + socket.id);
-    socket.on('sendMessage', (mess) => __awaiter(void 0, void 0, void 0, function* () {
-        const message = yield message_controller_1.default.sendMessage(mess.userID, mess.channelID, mess.message);
-        io.emit('sendMessage', message);
+    socket.on('sendMessage', ({ userID, channelID, message }) => __awaiter(void 0, void 0, void 0, function* () {
+        const messageSend = yield message_controller_1.default.sendMessage(userID, channelID, message);
+        io.emit('sendMessage', messageSend);
+        // const channelNotifiedbyUserID = await ChannelController.channelNotification( userID , channelID);
+        // io.emit('channelNotification',channelID)
+        // METTRE LA NOTIF ICI SI CA NE FONCTIONNE PAS
     }));
     socket.on('createChannel', ({ userID, name, description }) => __awaiter(void 0, void 0, void 0, function* () {
         const channel = yield channel_controller_1.default.createChannel(userID, name, description);
@@ -84,14 +88,14 @@ io.on("connection", (socket) => {
         const leaveMember = yield user_controller_1.default.leaveChannel(userID, channelID);
         io.emit('leaveChannel', { leaveMember, channelID });
     }));
-    // socket.on('channelNotification', async ({ userID , channelID }) => {
-    //     const channelNotifiedbyUserID = await ChannelController.notification(userID , channelID);
-    //     socket.emit('channelNotification',({ userID , channelID }))
-    // })
+    socket.on('channelNotification', (channelID) => __awaiter(void 0, void 0, void 0, function* () {
+        const channelNotifiedbyUserID = yield channel_controller_1.default.channelNotification(channelID);
+        io.emit('channelNotification', channelNotifiedbyUserID);
+    }));
 });
 // middleware
 server.use(body_parser_1.default.json());
-// server.use(cors({ origin : 'http://localhost:3000',credentials : true})); // A COMMENTER POUR LA PRODUCTION
+server.use(cors_1.default({ origin: 'http://localhost:3000', credentials: true })); // A COMMENTER POUR LA PRODUCTION
 server.use(cookie_parser_1.default());
 // routes
 server.use('/user', user_routes_1.default);
@@ -99,10 +103,13 @@ server.use('/channel', channel_routes_1.default);
 /**
  * A DECOMMENTER POUR LA PRODUCTION
  */
-server.use(express_1.default.static(path_1.default.join(__dirname, '../client/build')));
-server.get('/*', (_, res) => {
-    res.sendFile(path_1.default.join(__dirname, '../client/build/index.html'));
-});
+// server.use(express.static('files'))
+server.use('/profilepicture', express_1.default.static(path_1.default.join(__dirname, 'assets')));
+console.log(path_1.default.join(__dirname, 'assets'));
+// server.use(express.static(path.join(__dirname , '../client/build')));
+// server.get('/*', ( _, res) => {
+//     res.sendFile(path.join(__dirname , '../client/build/index.html'));
+// })
 httpServer.listen(PORT, () => {
     console.log('Connected on PORTT : ' + PORT);
 });

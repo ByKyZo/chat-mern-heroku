@@ -1,4 +1,5 @@
 import React from 'react';
+import { API_URL } from '../../../../config';
 
 const Message = ({user , message , date, hour}) => {
 
@@ -22,7 +23,7 @@ const Message = ({user , message , date, hour}) => {
         <li className='flex mb-4 w-full'>
             <img 
                 className='h-10 w-10 bg-white rounded-md mr-5 mt-1 flex-none' 
-                src={user.picture} 
+                src={`${API_URL}${user.picture}`} 
                 alt={'C'}>
             </img>
             <div className='w-full'>

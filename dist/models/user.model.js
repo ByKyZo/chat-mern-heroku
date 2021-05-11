@@ -20,8 +20,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-// import { isEmail } from 'validator';
-// import isEmail from 'validator/lib/isEmail';
 const UserSchema = new mongoose_1.Schema({
     pseudo: {
         type: String,
@@ -47,7 +45,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     picture: {
         type: String,
-        default: 'default picture'
+        default: 'profilepicture/images/noprofile.png'
     },
     role: {
         type: String,

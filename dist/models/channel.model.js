@@ -35,7 +35,7 @@ const ChannelSchema = new mongoose_1.Schema({
     coOwner: {
         type: [String]
     },
-    notification: [
+    notifications: [
         {
             userID: {
                 type: String,

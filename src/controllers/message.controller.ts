@@ -1,6 +1,8 @@
 import MessageModel from '../models/message.model';
 import UserModel from '../models/user.model';
 import { Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
 
 export default class MessageController {
 
@@ -10,10 +12,14 @@ export default class MessageController {
 
         const user = await UserModel.findById(userID).select('-channel -password -email -remember_me_token');
 
-        const messageSend = await MessageModel.create({user,channelID,message})
+        let messageSend = await MessageModel.create({userID,channelID,message})
 
-     
-        return messageSend;
+        const mess = messageSend.toObject();
+
+        mess.user = user;
+
+        return mess;
+
         // await MessageModel.deleteMany({});
     }
 

@@ -36,9 +36,11 @@ const Login = ({isAlreadyMember}) => {
                     pseudo : res.data.pseudo,
                     email : res.data.email,
                     description : res.data.description,
-                    picture : res.data.picture,
+                    picture : API_URL + res.data.picture,
                     role : null,
-                    isConnected : true 
+                    isConnected : true, 
+                    currentChannel : {},
+                    notifications : []
                 })
 
                 setCookie(['REMEMBER_ME'],res.data.remember_me_token)

@@ -9,5 +9,5 @@ router.get('/:id', channel_controller_1.default.getAllChannelByUserId);
 router.get('/search/:id', channel_controller_1.default.getAllChannelByNotMatchUserID);
 router.get('/message/:id', channel_controller_1.default.getChannelMessage);
 router.get('/user/:id', channel_controller_1.default.getUsersChannel);
-router.post('/ban', channel_controller_1.default.banChannelMember);
+router.post('/resetnotification', channel_controller_1.default.resetNotification);
 module.exports = router;

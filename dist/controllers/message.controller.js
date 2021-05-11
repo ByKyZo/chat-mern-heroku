@@ -20,8 +20,10 @@ class MessageController {
     static sendMessage(userID, channelID, message) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield user_model_1.default.findById(userID).select('-channel -password -email -remember_me_token');
-            const messageSend = yield message_model_1.default.create({ user, channelID, message });
-            return messageSend;
+            let messageSend = yield message_model_1.default.create({ userID, channelID, message });
+            const mess = messageSend.toObject();
+            mess.user = user;
+            return mess;
             // await MessageModel.deleteMany({});
         });
     }

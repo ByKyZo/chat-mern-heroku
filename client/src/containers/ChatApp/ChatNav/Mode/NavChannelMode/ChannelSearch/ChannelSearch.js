@@ -2,20 +2,20 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { UserContext } from '../../../../../../context/UserContext';
+import { SocketContext } from '../../../../../../context/SocketContext';
 import axios from 'axios';
-import { API_URL , SOCKET_URL } from '../../../../../../config'; 
-import io from 'socket.io-client';
+import { API_URL } from '../../../../../../config'; 
 import './openAnimation.css';
-
-const socket = io(SOCKET_URL);
+import { FiCheckCircle } from 'react-icons/fi';
 
 const ChannelSearch = ({ channels , setChannels }) => {
 
     const [openSearchList , setOpenSearchList] = useState(false);
     const [channelFind , setChannelFind] = useState([]);
-    const { user } = useContext(UserContext);
+    const { user , setUser } = useContext(UserContext);
     const SearchListRef = useRef();
     const SearchInput = useRef();
+    const socket = useContext(SocketContext)
 
     const handleLoadDataChannel = () => {
         axios.get(`${API_URL}channel/search/${user.id}`)
@@ -38,14 +38,24 @@ const ChannelSearch = ({ channels , setChannels }) => {
         socket.emit('joinChannel',infos)
     }
     useEffect(() => {
-        socket.open()
         socket.on('joinChannel',({ joinedUser , joinedChannel }) => {
+            setUser(oldUser => {
+                oldUser.notifications.push({
+                  icons : <FiCheckCircle />,
+                  color : 'green-500',
+                  label : `Channel ${joinedChannel.name} joined`
+                })
+                return {...oldUser}
+              })
             handleLoadDataChannel()
             setOpenSearchList(false)
             if (joinedUser._id !== user.id) return;
             setChannels(old => [...old, joinedChannel])
-        })   
-        return () => socket.close()     
+        })    
+
+        return () => {
+            socket.off('joinChannel')
+        }
     },[])
 
     const returnFindChannel = () => {

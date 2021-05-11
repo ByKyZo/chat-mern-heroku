@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { API_URL } from './config';
 import Authentication from './containers/Authentication/Authentication';
 import ChatApp from './containers/ChatApp/ChatApp';
 import { UserContext } from './context/UserContext';
+import  { SocketContext , socket} from './context/SocketContext'; 
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
+import NotificationItem from './components/Utils/Notifications/NotificationItem';
+import { FiCheckCircle } from 'react-icons/fi';
+import Notifications from './components/Utils/Notifications/Notifications';
+
 
 const userDisconnected = {
     id : null,
@@ -13,12 +18,21 @@ const userDisconnected = {
     description : null,
     picture : null,
     role : null,
-    isConnected : false
+    isConnected : false,
+    currentChannel : {},
+    notifications : [],
 }
 
 const App = (props) => {
 
+    // const notificationReducer = (state, action) => {
+    //     switch (action) {
+    //         case 'addnotif' : 
+    //     }
+    // }
+
     const [user , setUser] = useState(userDisconnected)
+    // const [state , dispatch] = useReducer()
     const [ , setCookie, removeCookie] = useCookies()
 
     useEffect(() => {
@@ -30,9 +44,11 @@ const App = (props) => {
                     pseudo : res.data.pseudo,
                     email : res.data.email,
                     description : res.data.description,
-                    picture : res.data.picture,
+                    picture : API_URL + res.data.picture,
                     role : res.data.role,
-                    isConnected : true // pas besoin de ça
+                    isConnected : true,// pas besoin de ça
+                    currentChannel : {},
+                    notifications : [],
                 })
                 // A VOIR POUR FAIRE DE L'ASYNC
             
@@ -46,22 +62,29 @@ const App = (props) => {
     },[])
 
     return (
-        <div className='h-screen flex justify-center items-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-10'>
+        <div className='h-screen flex justify-center items-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900'>
+            <SocketContext.Provider value={socket}>
+                <UserContext.Provider value={{user , setUser}} >
+                {/* <ul className='absolute'>
+                    {user.notifications.map(({icons , label, color},index) => {
+                        // console.log(icons)
+                        return <Popup key={index} icons={icons} label={label} color={color} />
+                    })}
+                </ul> */}
+                {/* <Popup notif={<FiCheckCircle />} label='testtt' color='pink-500' /> */}
+                    <Notifications />
+                {   
+                    !user.isConnected ?  
 
-            <UserContext.Provider value={{user , setUser}} >
-            
-            {   
-                !user.isConnected ?  
+                    <Authentication /> 
 
-                <Authentication /> 
+                    : 
 
-                : 
-
-                <ChatApp />     
-            }
-   
-            </UserContext.Provider>
-
+                    <ChatApp />     
+                }
+    
+                </UserContext.Provider>
+            </SocketContext.Provider>
         </div>
     )
 
